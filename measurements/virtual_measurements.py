@@ -42,7 +42,7 @@ def main(
     outputCsvFile = open(outputCsvFilePath, "w", newline="")
     outputCsvWriter = csv.writer(outputCsvFile)
     csvHeader = ['file name', 'height', 'weight']
-    outputCsvWriter.writerows(csvHeader)
+    outputCsvWriter.writerow(csvHeader)
 
     npz_files = sorted(os.listdir(demo_input_folder))
     npz_files = [x for x in npz_files if x.endswith('npz')]
@@ -96,7 +96,7 @@ def main(
         height = measurements['height']['tensor'].item()
         mass = measurements['mass']['tensor'].item()
         npzFileName = os.path.basename(npz_file)
-        outputCsvWriter.writerows([npzFileName, height, mass])
+        outputCsvWriter.writerow([npzFileName, str(height), str(mass)])
 
         # add measurements to image and save image
         if render:
@@ -105,6 +105,7 @@ def main(
                 (0, 10),  mmts_str, (0, 0, 0), font=font
             )
             pred_img.save(osp.join(demo_output_folder, npz_file.replace('npz', 'png')))
+    outputCsvFile.close()
 
 
 if __name__ == '__main__':
