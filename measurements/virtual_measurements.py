@@ -16,6 +16,7 @@ from body_measurements import BodyMeasurements
 from attributes.utils.renderer import Renderer
 import matplotlib.pyplot as plt
 from PIL import ImageDraw, ImageFont
+import csv
 
 
 @torch.no_grad()
@@ -36,6 +37,12 @@ def main(
         sys.exit(3)
 
     os.makedirs(demo_output_folder, exist_ok=True)
+
+    outputCsvFilePath = os.path.join(demo_output_folder, "measurements.csv")
+    outputCsvFile = open(outputCsvFilePath, "w", newline="")
+    outputCsvWriter = csv.writer(outputCsvFile)
+    csvHeader = ['file name', 'height', 'weight']
+    outputCsvWriter.writerows(csvHeader)
 
     npz_files = sorted(os.listdir(demo_input_folder))
     npz_files = [x for x in npz_files if x.endswith('npz')]
@@ -86,6 +93,10 @@ def main(
             unit = 'kg' if k == 'mass' else 'm'
             mmts_str += f'    {k}: {value:.2f} {unit}'
         print(mmts_str)
+        height = measurements['height']['tensor'].item()
+        mass = measurements['mass']['tensor'].item()
+        npzFileName = os.path.basename(npz_file)
+        outputCsvWriter.writerows([npzFileName, height, mass])
 
         # add measurements to image and save image
         if render:
